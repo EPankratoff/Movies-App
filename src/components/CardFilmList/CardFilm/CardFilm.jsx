@@ -1,44 +1,73 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Card, Typography, Col } from 'antd'
-
 import './CardFilm.css'
-// import Card from './Card/Card'
-import photo from '../../../assets'
+
+import MoviesApi from '../../../services/movie.service'
 
 const { Title, Text } = Typography
 
-const CardFilm = () => {
+const CardFilm = ({ movie }) => {
+  console.log(movie)
+  const { title, overview, poster_path, genre_ids } = movie
+  const [genres, setGenres] = useState([])
+
+  useEffect(() => {
+    const moviesApi = new MoviesApi()
+
+    const loadGenres = async () => {
+      try {
+        const genreList = await moviesApi.getGenreList()
+        setGenres(genreList)
+      } catch (error) {
+        console.error('Error loading genre list:', error)
+      }
+    }
+
+    loadGenres()
+  }, [])
+
   return (
     <Card
       style={{
-        height: '100%',
+        height: '280px',
         position: 'relative',
         borderRadius: '0',
-        width: '100%',
+        width: '454px',
         paddingRight: '10px',
         boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.15)',
       }}
     >
-      <Row style={{ height: '100%' }} gutter={16}>
-        <Col span={6}>
-          <img style={{ height: '100%', width: '100%', objectFit: 'cover' }} src={photo} alt="фото"></img>
+      <Row style={{ height: '100%' }} gutter={15}>
+        <Col span={11}>
+          <img
+            style={{ height: '280px', objectFit: 'cover' }}
+            src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
+            alt="фото"
+          ></img>
         </Col>
-        <Col span={18}>
-          <Row gutter={10}>
+        <Col span={13}>
+          <Row gutter={15}>
             <Col span={24}>
               <Title style={{ width: '88%', marginTop: '12px' }} level={3}>
-                The way back
+                {title}
               </Title>
               <Text style={{ color: '#827E7E', size: '12px' }}>March 5, 2020 </Text>
             </Col>
             <Col span={24}>
-              <Text code>Жанр фильма</Text>
+              {genres && genres.length > 0 ? (
+                genres
+                  .filter((genre) => genre_ids.includes(genre.id))
+                  .map((genre) => (
+                    <Text code key={genre.id} className="genres">
+                      {genre.name}
+                    </Text>
+                  ))
+              ) : (
+                <span>No genres available</span>
+              )}
             </Col>
-            <Col span={12}>
-              <Text ellipsis={{ rows: 6 }}>
-                A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction
-                attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...
-              </Text>
+            <Col span={24}>
+              <Text className="description">{overview}</Text>
             </Col>
           </Row>
         </Col>
@@ -46,4 +75,5 @@ const CardFilm = () => {
     </Card>
   )
 }
+
 export default CardFilm

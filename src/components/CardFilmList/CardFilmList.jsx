@@ -3,13 +3,12 @@ import React from 'react'
 import './CardFilmList.css'
 import CardFilm from './CardFilm/CardFilm'
 
-const CardFilmList = () => {
+const CardFilmList = ({ movies }) => {
   return (
     <div className="card-list">
-      <CardFilm />
-      <CardFilm />
-      <CardFilm />
-      <CardFilm />
+      {movies.map((movie) => (
+        <CardFilm key={movie.id} movie={movie} />
+      ))}
     </div>
   )
 }

@@ -1,0 +1,84 @@
+styles.css body {
+    font-size: 12px;
+    min-width: 500px;
+    margin: 0;
+}
+
+#root {
+    max-width: 1010px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.layout {
+    margin: 20px;
+}
+
+.content {
+    padding: 20px;
+}
+
+.card .ant-card-body {
+    padding: 0;
+    width: 450px;
+    height: 280px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+.center {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.image-container {
+    width: 100%;
+}
+
+.image {
+    object-fit: cover;
+    height: 280px;
+
+}
+
+.title {
+    font-size: 1.7rem;
+    line-height: 30px;
+}
+
+.date {
+    color: #bfbfbf;
+}
+
+.genres-container {
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 8px;
+}
+
+.genres {}
+
+.description {
+    margin-top: 10px;
+}
+
+.progress-container {}
+
+.movie-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+}
+
+@media (max-width: 999px) {
+    .movie-list {
+        grid-template-columns: 1fr;
+    }
+}
