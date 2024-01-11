@@ -1,19 +1,24 @@
-styles.css body {
+body {
     font-size: 12px;
     min-width: 500px;
     margin: 0;
+    ;
 }
 
 #root {
-    max-width: 1010px;
+    max-width: 1240px;
     margin-left: auto;
     margin-right: auto;
 }
 
 
-.layout {
-    margin: 20px;
+h5 {
+    margin: 0;
 }
+
+/* .layout {
+    margin: 20px;
+} */
 
 .content {
     padding: 20px;
@@ -21,8 +26,8 @@ styles.css body {
 
 .card .ant-card-body {
     padding: 0;
-    width: 450px;
-    height: 280px;
+    width: 550px;
+    height: auto;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -43,13 +48,17 @@ styles.css body {
 
 .image {
     object-fit: cover;
-    height: 280px;
-
+    height: 100%;
+    width: 100%;
+    border-radius: 6px 0px 0px 6px;
 }
 
 .title {
-    font-size: 1.7rem;
-    line-height: 30px;
+    margin-top: 12px;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
 }
 
 .date {
@@ -63,13 +72,33 @@ styles.css body {
     gap: 8px 8px;
 }
 
-.genres {}
-
-.description {
+.genres {
     margin-top: 10px;
 }
 
-.progress-container {}
+.description {
+    padding-top: 10px;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+}
+
+.vote {
+    border-radius: 50%;
+    border: 2px solid #E9D100;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    top: 12px;
+
+}
+
+.vote_average {
+    position: relative;
+    top: 2px;
+    right: 3px;
+}
 
 .movie-list {
     display: grid;
