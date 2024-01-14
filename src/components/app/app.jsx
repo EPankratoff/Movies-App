@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import { Offline, Online } from 'react-detect-offline'
-import { Layout, Alert, Space } from 'antd'
+import { Layout, Alert, Space, Pagination } from 'antd'
 
 import './app.css'
 import MoviesApi from '../../services/movie.service'
 import CardFilmList from '../CardFilmList/CardFilmList'
 import Spinner from '../Spinner/Spinner'
 import ErrorMovies from '../ErrorMovies/ErrorMovies'
+import SearchFilm from '../SearchFilm/SearchFilm'
 
 const { Content } = Layout
 
@@ -48,17 +49,19 @@ class App extends Component {
     const { movies, loading, error } = this.state
     const hasData = !(loading || error)
     const errorMessage = error ? <ErrorMovies /> : null
-    const spinner = loading ? <Spinner /> : null
+    const spinner = loading ? <Spinner className="spinner" /> : null
     const content = hasData ? <CardFilmList movies={movies} loading={loading} /> : null
     return (
       <>
         <Online>
           <Layout className="layout">
             <Content className="content center">
+              <SearchFilm />
               {errorMessage}
-              {spinner}
               {content}
             </Content>
+            {spinner}
+            <Pagination defaultCurrent={1} total={25} showSizeChanger={false} />
           </Layout>
         </Online>
         <Offline>
