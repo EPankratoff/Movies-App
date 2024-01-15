@@ -2,20 +2,19 @@ export default class MoviesApi {
   _apiBase = 'https://api.themoviedb.org/3'
   _apikey = '42228cc1d5c40501f5230e1b1183c153'
 
-  _apiOptions = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization:
-        'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MjIyOGNjMWQ1YzQwNTAxZjUyMzBlMWIxMTgzYzE1MyIsInN1YiI6IjY1OWMwNzI5ODliNTYxMzY5MWZjNjU1YSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.RMtb4C-R6Q75jAhPJ9jDwseyTrXD_z7IIO5eFUfVnaI',
-    },
-  }
+  async getResource(url, page = 1, params = {}) {
+    const queryParams = new URLSearchParams({
+      api_key: this._apikey,
+      page: page,
+      ...params,
+    })
 
-  async getResource(url, page = 1) {
-    const response = await fetch(`${this._apiBase}${url}?api_key=${this._apikey}&page=${page}`, this._apiOptions)
+    const response = await fetch(`${this._apiBase}${url}?${queryParams.toString()}`)
+
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`)
     }
+
     return await response.json()
   }
 
@@ -25,7 +24,7 @@ export default class MoviesApi {
 
   async getGenreList() {
     try {
-      const data = await this.getResource('/genre/movie/list?language=en')
+      const data = await this.getResource('/genre/movie/list', 1, { language: 'en' })
       return data.genres
     } catch (error) {
       console.error('Error fetching genre list:', error)
@@ -34,6 +33,6 @@ export default class MoviesApi {
   }
 
   searchMovies(query, page = 1) {
-    return this.getResource(`/search/movie?query=${query}`, page)
+    return this.getResource('/search/movie', page, { query })
   }
 }

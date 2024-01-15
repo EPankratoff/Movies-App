@@ -34,7 +34,7 @@ export default class SearchFilm extends Component {
         style={{ width: '100%', margin: '0 auto' }}
         placeholder="Type to search..."
         value={searchInput}
-        onChange={this.handleInput}
+        onChange={(e) => this.handleInput(e)}
       />
     )
   }

@@ -20,6 +20,8 @@ class App extends Component {
       currentPage: 1,
       totalPages: 1,
       error: false,
+      searchQuery: '',
+      totalSearchPages: 1,
     }
     this.moviesApi = new MoviesApi()
   }
@@ -46,10 +48,12 @@ class App extends Component {
       loading: true,
       error: false,
       noResults: false,
+      currentPage: 1,
+      searchQuery: query,
     })
 
     this.moviesApi
-      .searchMovies(query)
+      .searchMovies(query, this.state.currentPage)
       .then((moviesData) => {
         console.log('Movies data:', moviesData)
         if (moviesData.results.length === 0) {
@@ -59,6 +63,7 @@ class App extends Component {
         } else {
           this.setState({
             noResults: false,
+            totalSearchPages: moviesData.total_pages,
           })
         }
         this.onMovieLoaded(moviesData.results, moviesData.total_pages)
@@ -69,6 +74,7 @@ class App extends Component {
     this.setState({
       currentPage: page,
       loading: true,
+      totalPages: this.state.totalSearchPages,
     })
 
     this.fetchMovies(page)

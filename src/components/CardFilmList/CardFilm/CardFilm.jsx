@@ -50,7 +50,7 @@ class CardFilm extends Component {
       ? format(parseISO(release_date), 'MMMM dd, yyyy', { local: enGB })
       : 'Время не указано'
 
-    const movieRate = vote_average
+    const movieRate = parseFloat(vote_average.toFixed(1))
     let movieColor
 
     if (movieRate > 0 && movieRate < 3) {
