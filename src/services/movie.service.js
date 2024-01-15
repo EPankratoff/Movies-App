@@ -11,16 +11,16 @@ export default class MoviesApi {
     },
   }
 
-  async getResource(url) {
-    const response = await fetch(`${this._apiBase}${url}?api_key=${this._apikey}`, this._apiOptions)
+  async getResource(url, page = 1) {
+    const response = await fetch(`${this._apiBase}${url}?api_key=${this._apikey}&page=${page}`, this._apiOptions)
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`)
     }
     return await response.json()
   }
 
-  getMovies() {
-    return this.getResource('/discover/movie')
+  getMovies(page = 1) {
+    return this.getResource('/discover/movie', page)
   }
 
   async getGenreList() {
@@ -31,5 +31,9 @@ export default class MoviesApi {
       console.error('Error fetching genre list:', error)
       throw error
     }
+  }
+
+  searchMovies(query, page = 1) {
+    return this.getResource(`/search/movie?query=${query}`, page)
   }
 }

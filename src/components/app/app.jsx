@@ -17,18 +17,61 @@ class App extends Component {
     this.state = {
       movies: [],
       loading: true,
+      currentPage: 1,
+      totalPages: 1,
       error: false,
     }
     this.moviesApi = new MoviesApi()
   }
 
   componentDidMount() {
+    this.fetchMovies(this.state.currentPage)
+  }
+
+  fetchMovies = (page) => {
     this.moviesApi
-      .getMovies()
+      .getMovies(page)
       .then((moviesData) => {
-        this.onMovieLoaded(moviesData.results)
+        this.onMovieLoaded(moviesData.results, moviesData.total_pages)
       })
       .catch(this.onError)
+  }
+
+  handleSearch = (query) => {
+    if (query.trim() === '') {
+      return
+    }
+
+    this.setState({
+      loading: true,
+      error: false,
+      noResults: false,
+    })
+
+    this.moviesApi
+      .searchMovies(query)
+      .then((moviesData) => {
+        console.log('Movies data:', moviesData)
+        if (moviesData.results.length === 0) {
+          this.setState({
+            noResults: true,
+          })
+        } else {
+          this.setState({
+            noResults: false,
+          })
+        }
+        this.onMovieLoaded(moviesData.results, moviesData.total_pages)
+      })
+      .catch(this.onError)
+  }
+  handlePageChange = (page) => {
+    this.setState({
+      currentPage: page,
+      loading: true,
+    })
+
+    this.fetchMovies(page)
   }
 
   onError = () => {
@@ -38,30 +81,42 @@ class App extends Component {
     })
   }
 
-  onMovieLoaded = (movies) => {
+  onMovieLoaded = (movies, total_pages) => {
     this.setState({
       movies,
       loading: false,
+      totalPages: total_pages,
     })
   }
 
   render() {
-    const { movies, loading, error } = this.state
+    const { movies, loading, error, currentPage, totalPages, noResults } = this.state
     const hasData = !(loading || error)
     const errorMessage = error ? <ErrorMovies /> : null
     const spinner = loading ? <Spinner className="spinner" /> : null
     const content = hasData ? <CardFilmList movies={movies} loading={loading} /> : null
+    const noResultsMessage = noResults ? (
+      <Alert message="Нет результатов." description="Поробуйте изменить свой запрос по поиску фильмов" type="info" />
+    ) : null
+
     return (
       <>
         <Online>
           <Layout className="layout">
             <Content className="content center">
-              <SearchFilm />
+              <SearchFilm onSearch={this.handleSearch} />
               {errorMessage}
               {content}
             </Content>
+            {noResultsMessage}
+
             {spinner}
-            <Pagination defaultCurrent={1} total={25} showSizeChanger={false} />
+            <Pagination
+              onChange={this.handlePageChange}
+              current={currentPage}
+              total={totalPages}
+              showSizeChanger={false}
+            />
           </Layout>
         </Online>
         <Offline>

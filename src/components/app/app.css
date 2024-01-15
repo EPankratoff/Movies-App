@@ -89,16 +89,16 @@ h5 {
     border: 2px solid #E9D100;
     width: 30px;
     height: 30px;
-    position: relative;
-    top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 20px;
 
 }
 
-.vote_average {
-    position: relative;
-    top: 2px;
-    right: 3px;
-}
+
 
 .movie-list {
     display: grid;
