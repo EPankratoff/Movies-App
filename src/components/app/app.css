@@ -111,3 +111,9 @@ h5 {
         grid-template-columns: 1fr;
     }
 }
+
+:where(.css-dev-only-do-not-override-dkbvqv).ant-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 14px auto;
+}

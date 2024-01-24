@@ -77,7 +77,7 @@ class CardFilm extends Component {
                 </Title>
               </Col>
               <Col className="vote" style={{ borderColor: movieColor }}>
-                <span className="vote_average">{vote_average}</span>
+                <span className="vote_average">{movieRate}</span>
               </Col>
               <Col>
                 <Text style={{ color: '#827E7E', size: '12px' }}>{formateDate} </Text>

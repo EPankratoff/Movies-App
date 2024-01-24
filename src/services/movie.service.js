@@ -18,6 +18,22 @@ export default class MoviesApi {
     return await response.json()
   }
 
+  async fetchJSON(url, options = {}) {
+    const response = await fetch(url, options)
+
+    if (!response.ok) {
+      throw new Error(`Ошибка при выполнении запроса ${url}`)
+    }
+
+    return await response.json()
+  }
+
+  async createGuestSession() {
+    const url = `${this._apiBase}/authentication/guest_session/new?api_key=${this._apikey}`
+    const data = await this.fetchJSON(url)
+    return data.guest_session_id
+  }
+
   getMovies(page = 1) {
     return this.getResource('/discover/movie', page)
   }
