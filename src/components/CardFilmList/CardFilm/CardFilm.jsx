@@ -32,17 +32,27 @@ class CardFilm extends Component {
     }
   }
 
-  trimmedText(text, maxLength) {
-    if (text.length <= maxLength) return text
+  trimmedText(text) {
+    const maxLength = 200
+    if (!text || text.length <= maxLength) {
+      return text
+    }
+    return text.substring(0, maxLength) + '...'
+  }
 
-    const myOverview = text.split(' ')
-    let trimmedString = myOverview.slice(0, maxLength).join(' ')
-    return trimmedString + '...'
+  handleRatingChange = (newRating) => {
+    const { movie, onPostRating, onDeleteRating } = this.props
+
+    if (newRating > 0) {
+      onPostRating(movie.id, newRating)
+    } else {
+      onDeleteRating(movie.id)
+    }
   }
 
   render() {
     const { movie } = this.props
-    const { title, overview, poster_path, genre_ids, vote_average, release_date } = movie
+    const { title, overview, poster_path, genre_ids, vote_average, release_date, userRating } = movie
     const { genres } = this.state
     const newOwerview = this.trimmedText(overview, 45)
 
@@ -50,7 +60,8 @@ class CardFilm extends Component {
       ? format(parseISO(release_date), 'MMMM dd, yyyy', { local: enGB })
       : 'Время не указано'
 
-    const movieRate = parseFloat(vote_average.toFixed(1))
+    const movieRate = vote_average !== undefined ? parseFloat(vote_average.toFixed(1)) : 0
+
     let movieColor
 
     if (movieRate > 0 && movieRate < 3) {
@@ -82,10 +93,10 @@ class CardFilm extends Component {
               <Col>
                 <Text style={{ color: '#827E7E', size: '12px' }}>{formateDate} </Text>
               </Col>
-              <Col span={21} className="genres">
+              <Col span={24} className="genres">
                 {genres && genres.length > 0 ? (
                   genres
-                    .filter((genre) => genre_ids.includes(genre.id))
+                    .filter((genre) => genre_ids && genre_ids.includes(genre.id))
                     .map((genre) => (
                       <Text code key={genre.id}>
                         {genre.name}
@@ -99,7 +110,7 @@ class CardFilm extends Component {
                 <Text>{newOwerview}</Text>
               </Col>
               <Col>
-                <Rate count={10}></Rate>
+                <Rate count={10} value={userRating} onChange={(value) => this.handleRatingChange(value)} />
               </Col>
             </Row>
           </Col>

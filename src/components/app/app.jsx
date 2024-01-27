@@ -1,15 +1,13 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react'
 import { Offline, Online } from 'react-detect-offline'
-import { Layout, Alert, Space, Pagination } from 'antd'
+import { Layout, Alert, Space, Tabs } from 'antd'
 
 import './app.css'
 import MoviesApi from '../../services/movie.service'
-import CardFilmList from '../CardFilmList/CardFilmList'
-import Spinner from '../Spinner/Spinner'
-import ErrorMovies from '../ErrorMovies/ErrorMovies'
-import SearchFilm from '../SearchFilm/SearchFilm'
-
-const { Content } = Layout
+import SearchTab from '../SearchTab/SearchTab'
+import { MoviesProvider } from '../MoviesContext/MoviesContext'
+import RatedTab from '../RatedTab/RatedTab'
 
 class App extends Component {
   constructor(props) {
@@ -22,12 +20,70 @@ class App extends Component {
       error: false,
       searchQuery: '',
       totalSearchPages: 1,
+      guestSessionId: '',
+      ratedMovies: [],
+      ratedTotalPages: 1,
     }
     this.moviesApi = new MoviesApi()
   }
 
   componentDidMount() {
+    this.createGuest()
     this.fetchMovies(this.state.currentPage)
+  }
+
+  async loadRatedMovies(sessionId, page) {
+    try {
+      console.log('Loading rated movies for session:', sessionId, 'page:', page)
+
+      const ratedMoviesResponse = await this.moviesApi.getRatingList(sessionId, page)
+      if (ratedMoviesResponse.results) {
+        console.log('Rated Movies Response:', ratedMoviesResponse.results)
+      } else {
+        console.error('Ответ API не содержит необходимых данных:', ratedMoviesResponse.results)
+      }
+
+      const ratedMovies = ratedMoviesResponse.results || []
+
+      const updatedMovies = [
+        ...this.state.ratedMovies,
+        ...ratedMoviesResponse.results.map((ratedMovie) => ({
+          id: ratedMovie.id,
+          title: ratedMovie.title || 'Unknown Title',
+          rating: ratedMovie.rating,
+          overview: ratedMovie.overview,
+          poster_path: ratedMovie.poster_path,
+          genre_ids: ratedMovie.genre_ids,
+          vote_average: ratedMovie.vote_average,
+          release_date: ratedMovie.release_date,
+        })),
+      ]
+
+      const ratedTotalPages = ratedMoviesResponse.total_pages
+      this.setState({
+        ratedMovies: updatedMovies,
+        ratedTotalPages,
+        ratedCurrentPage: page,
+      })
+    } catch (error) {
+      console.error('Ошибка загрузки рейтинговых фильмов:', error)
+    }
+  }
+
+  createGuest() {
+    this.moviesApi.createGuestSession().then((result) => {
+      console.log('Гостевая сессия создана:', result.guest_session_id)
+      this.setState(
+        {
+          guestSessionId: result.guest_session_id,
+        },
+        () => {
+          if (this.state.ratedMovies.length > 0) {
+            this.loadRatedMovies(result.guest_session_id, this.state.ratedCurrentPage)
+          }
+        }
+      )
+    })
   }
 
   fetchMovies = (page) => {
@@ -55,7 +111,6 @@ class App extends Component {
     this.moviesApi
       .searchMovies(query, this.state.currentPage)
       .then((moviesData) => {
-        console.log('Movies data:', moviesData)
         if (moviesData.results.length === 0) {
           this.setState({
             noResults: true,
@@ -95,34 +150,85 @@ class App extends Component {
     })
   }
 
+  postRating = (movieId, value) => {
+    const { guestSessionId, ratedMovies } = this.state
+
+    this.moviesApi.postRating(guestSessionId, movieId, value).then(() => {
+      this.setState(({ ratedMovies }) => {
+        const newRatedMovies = [...ratedMovies]
+        const ratedIdx = newRatedMovies.findIndex((object) => object.id === movieId)
+
+        if (ratedIdx >= 0) {
+          newRatedMovies[ratedIdx].value = value
+          return {
+            ratedMovies: newRatedMovies,
+          }
+        }
+
+        newRatedMovies.push({ id: movieId, value })
+        return {
+          ratedMovies: newRatedMovies,
+        }
+      })
+    })
+  }
+
+  deleteRating = (movieId) => {
+    const { guestSessionId, ratedMovies } = this.state
+
+    this.moviesApi.deleteRating(guestSessionId, movieId).then(() => {
+      this.setState(({ ratedMovies }) => {
+        const newRatedMovies = [...ratedMovies]
+        const ratedIdx = newRatedMovies.findIndex((object) => object.id === movieId)
+
+        if (ratedIdx >= 0) {
+          newRatedMovies[ratedIdx].value = 0
+          return {
+            ratedMovies: newRatedMovies,
+          }
+        }
+
+        return {
+          ratedMovies: newRatedMovies,
+        }
+      })
+    })
+  }
+
   render() {
-    const { movies, loading, error, currentPage, totalPages, noResults } = this.state
-    const hasData = !(loading || error)
-    const errorMessage = error ? <ErrorMovies /> : null
-    const spinner = loading ? <Spinner className="spinner" /> : null
-    const content = hasData ? <CardFilmList movies={movies} loading={loading} /> : null
-    const noResultsMessage = noResults ? (
-      <Alert message="Нет результатов." description="Поробуйте изменить свой запрос по поиску фильмов" type="info" />
-    ) : null
+    const { movies, loading, error, currentPage, totalPages, noResults, ratedMovies, ratedTotalPages, guestSessionId } =
+      this.state
 
     return (
-      <>
+      <MoviesProvider>
         <Online>
           <Layout className="layout">
-            <Content className="content center">
-              <SearchFilm onSearch={this.handleSearch} />
-              {errorMessage}
-              {content}
-            </Content>
-            {noResultsMessage}
-
-            {spinner}
-            <Pagination
-              onChange={this.handlePageChange}
-              current={currentPage}
-              total={totalPages}
-              showSizeChanger={false}
-            />
+            <Tabs defaultActiveKey="1" centered>
+              <Tabs.TabPane tab="Search" key="1">
+                <SearchTab
+                  movies={movies}
+                  loading={loading}
+                  error={error}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  noResults={noResults}
+                  onSearch={this.handleSearch}
+                  onChange={this.handlePageChange}
+                  current={currentPage}
+                  total={totalPages}
+                  onPostRating={this.postRating}
+                  onDeleteRating={this.deleteRating}
+                />
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="Rated" key="2">
+                <RatedTab
+                  guestSessionId={guestSessionId}
+                  ratedMovies={ratedMovies}
+                  ratedTotalPages={ratedTotalPages}
+                  loadRatedMovies={() => this.loadRatedMovies(guestSessionId, this.state.currentPage)}
+                />
+              </Tabs.TabPane>
+            </Tabs>
           </Layout>
         </Online>
         <Offline>
@@ -140,7 +246,7 @@ class App extends Component {
             />
           </Space>
         </Offline>
-      </>
+      </MoviesProvider>
     )
   }
 }

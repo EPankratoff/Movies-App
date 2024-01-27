@@ -15,7 +15,7 @@ export default class MoviesApi {
       throw new Error(`Error ${response.status}: ${response.statusText}`)
     }
 
-    return await response.json()
+    return response.json()
   }
 
   async fetchJSON(url, options = {}) {
@@ -29,9 +29,58 @@ export default class MoviesApi {
   }
 
   async createGuestSession() {
-    const url = `${this._apiBase}/authentication/guest_session/new?api_key=${this._apikey}`
-    const data = await this.fetchJSON(url)
-    return data.guest_session_id
+    const response = await this.fetchJSON(`${this._apiBase}/authentication/guest_session/new?api_key=${this._apikey}`)
+    return response
+  }
+
+  async getRatingList(guestSessionId, page) {
+    try {
+      const response = await this.fetchJSON(
+        `${this._apiBase}/guest_session/${guestSessionId}/rated/movies?page=${page}&api_key=${this._apikey}`
+      )
+
+      console.log('Rated Movies Response:', response)
+
+      return response
+    } catch (error) {
+      console.error('Error fetching rated movies:', error)
+      throw error
+    }
+  }
+
+  async postRating(sessionId, movieId, rating) {
+    const url = `${this._apiBase}/movie/${movieId}/rating?guest_session_id=${sessionId}&api_key=${this._apikey}`
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+      body: JSON.stringify({ value: rating }),
+    }
+
+    try {
+      await this.fetchJSON(url, options)
+    } catch (error) {
+      console.error('Ошибка при отправке рейтинга:', error)
+      throw error
+    }
+  }
+
+  async deleteRating(sessionId, movieId) {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json;charset=utf-8',
+      },
+    }
+
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/${movieId}/rating?guest_session_id=${sessionId}&api_key=${this._apikey}`,
+      options
+    )
+    return response.json()
   }
 
   getMovies(page = 1) {
