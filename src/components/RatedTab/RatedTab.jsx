@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Pagination, Layout, Alert } from 'antd'
+import { Pagination, Layout } from 'antd'
 
 import CardFilmList from '../CardFilmList/CardFilmList'
 import Spinner from '../Spinner/Spinner'
@@ -8,30 +8,40 @@ import ErrorMovies from '../ErrorMovies/ErrorMovies'
 const { Content } = Layout
 
 class RatedTab extends Component {
+  // async componentDidMount() {
+  //   this.props.getRatedList()
+  // }
+
   async componentDidMount() {
-    this.props.loadRatedMovies()
+    const { loadRatedMovies, currentPage } = this.props
+    loadRatedMovies(currentPage)
   }
 
   render() {
     const { ratedMovies, currentPage, ratedTotalPages, handlePageChange, guestSessionId, loading, error } = this.props
 
-    if (loading) {
-      return <Spinner className="spinner" />
-    }
+    const hasData = !(loading || error)
+    const spinner = loading ? <Spinner className="spinner" /> : null
+    const errorMessage = error ? <ErrorMovies /> : null
+    const content =
+      hasData && ratedMovies && ratedMovies.length > 0 ? (
+        <CardFilmList guestSessionId={guestSessionId} movies={ratedMovies} />
+      ) : null
 
-    if (error) {
-      return <ErrorMovies />
-    }
-
-    if (!ratedMovies || !ratedMovies.results || ratedMovies.results.length === 0) {
-      return <Alert message="Нет оцененных фильмов." description="Пожалуйста, оцените фильмы." type="info" />
-    }
+    // const alertMessage =
+    //   !hasData || (hasData && (!ratedMovies.results || ratedMovies.results.length === 0)) ? (
+    //     <Alert message="Нет оцененных фильмов" description="Оцените фильм" type="info" />
+    //   ) : null
 
     return (
       <div>
         <Content className="content center">
-          <CardFilmList guestSessionId={guestSessionId} movies={ratedMovies.results} />
           <div className="pagination-container">
+            {errorMessage}
+            {/* {alertMessage} */}
+            {content}
+            {spinner}
+
             <Pagination
               current={currentPage}
               total={ratedTotalPages}

@@ -22,14 +22,17 @@ class App extends Component {
       totalSearchPages: 1,
       guestSessionId: '',
       ratedMovies: [],
+      ratedFilms: [],
+      ratedList: [],
       ratedTotalPages: 1,
+      currentPageRated: 1,
     }
     this.moviesApi = new MoviesApi()
   }
 
   componentDidMount() {
     this.createGuest()
-    this.fetchMovies(this.state.currentPage)
+    this.fetchMovies()
   }
 
   async loadRatedMovies(sessionId, page) {
@@ -46,8 +49,8 @@ class App extends Component {
       const ratedMovies = ratedMoviesResponse.results || []
 
       const updatedMovies = [
-        ...this.state.ratedMovies,
-        ...ratedMoviesResponse.results.map((ratedMovie) => ({
+        ...this.state.ratedFilms,
+        ...ratedMovies.map((ratedMovie) => ({
           id: ratedMovie.id,
           title: ratedMovie.title || 'Unknown Title',
           rating: ratedMovie.rating,
@@ -71,20 +74,49 @@ class App extends Component {
   }
 
   createGuest() {
-    this.moviesApi.createGuestSession().then((result) => {
-      console.log('Гостевая сессия создана:', result.guest_session_id)
-      this.setState(
-        {
-          guestSessionId: result.guest_session_id,
-        },
-        () => {
-          if (this.state.ratedMovies.length > 0) {
-            this.loadRatedMovies(result.guest_session_id, this.state.ratedCurrentPage)
+    this.moviesApi
+      .createGuestSession()
+      .then((result) => {
+        console.log('Гостевая сессия создана:', result.guest_session_id)
+        this.setState(
+          {
+            guestSessionId: result.guest_session_id,
           }
-        }
-      )
-    })
+          // () => {
+          //   if (this.state.ratedMovies.length > 0) {
+          //     this.loadRatedMovies(result.guest_session_id, this.state.ratedCurrentPage)
+          //   }
+          // }
+        )
+      })
+      .catch(this.onError)
   }
+
+  // getRatedList(page) {
+  //   const { guestSessionId } = this.state
+
+  //   this.setState({
+  //     loading: true,
+  //   })
+
+  //   this.moviesApi
+  //     .getRatingList(guestSessionId, page)
+  //     .then((result) => {
+  //       if (result.results.length === 0) {
+  //         this.setState({
+  //           ratedList: result.results,
+  //         })
+  //       }
+  //       this.setState({
+  //         ratedList: result.results,
+  //         loading: false,
+  //         error: false,
+  //         ratedTotalPages: result.total_results,
+  //         currentPageRated: page,
+  //       })
+  //     })
+  //     .catch(this.onError)
+  // }
 
   fetchMovies = (page) => {
     this.moviesApi
@@ -151,53 +183,65 @@ class App extends Component {
   }
 
   postRating = (movieId, value) => {
-    const { guestSessionId, ratedMovies } = this.state
+    const { guestSessionId } = this.state
 
     this.moviesApi.postRating(guestSessionId, movieId, value).then(() => {
-      this.setState(({ ratedMovies }) => {
-        const newRatedMovies = [...ratedMovies]
+      this.setState(({ ratedFilms }) => {
+        const newRatedMovies = [...ratedFilms]
         const ratedIdx = newRatedMovies.findIndex((object) => object.id === movieId)
 
         if (ratedIdx >= 0) {
           newRatedMovies[ratedIdx].value = value
           return {
-            ratedMovies: newRatedMovies,
+            ratedFilms: newRatedMovies,
           }
         }
 
         newRatedMovies.push({ id: movieId, value })
         return {
-          ratedMovies: newRatedMovies,
+          ratedFilms: newRatedMovies,
         }
       })
     })
   }
 
   deleteRating = (movieId) => {
-    const { guestSessionId, ratedMovies } = this.state
+    const { guestSessionId } = this.state
 
     this.moviesApi.deleteRating(guestSessionId, movieId).then(() => {
-      this.setState(({ ratedMovies }) => {
-        const newRatedMovies = [...ratedMovies]
+      this.setState(({ ratedFilms }) => {
+        const newRatedMovies = [...ratedFilms]
         const ratedIdx = newRatedMovies.findIndex((object) => object.id === movieId)
 
         if (ratedIdx >= 0) {
           newRatedMovies[ratedIdx].value = 0
           return {
-            ratedMovies: newRatedMovies,
+            ratedFilms: newRatedMovies,
           }
         }
 
         return {
-          ratedMovies: newRatedMovies,
+          ratedFilms: newRatedMovies,
         }
       })
     })
   }
 
   render() {
-    const { movies, loading, error, currentPage, totalPages, noResults, ratedMovies, ratedTotalPages, guestSessionId } =
-      this.state
+    const {
+      movies,
+      loading,
+      error,
+      currentPage,
+      totalPages,
+      noResults,
+      ratedMovies,
+      ratedTotalPages,
+      guestSessionId,
+      ratedFilms,
+      ratedList,
+      currentPageRated,
+    } = this.state
 
     return (
       <MoviesProvider>
@@ -224,8 +268,10 @@ class App extends Component {
                 <RatedTab
                   guestSessionId={guestSessionId}
                   ratedMovies={ratedMovies}
+                  ratedFilms={ratedFilms}
+                  ratedList={ratedList}
                   ratedTotalPages={ratedTotalPages}
-                  loadRatedMovies={() => this.loadRatedMovies(guestSessionId, this.state.currentPage)}
+                  loadRatedMovies={() => this.loadRatedMovies(guestSessionId, currentPage)}
                 />
               </Tabs.TabPane>
             </Tabs>
