@@ -1,3 +1,11 @@
 :where(.css-dev-only-do-not-override-dkbvqv).ant-card .ant-card-body {
     padding: 0;
 }
+
+.rate {
+    margin-top: 10px;
+}
+
+:where(.css-dev-only-do-not-override-dkbvqv).ant-col-13 {
+    display: flex;
+}

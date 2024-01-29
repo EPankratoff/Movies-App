@@ -47,6 +47,15 @@ export default class MoviesApi {
       throw error
     }
   }
+  async getByKeyword(key, page) {
+    try {
+      const response = await this.getResource('/search/movie', page, { query: key })
+      return response.results
+    } catch (error) {
+      console.error('Error fetching movies by keyword:', error)
+      throw error
+    }
+  }
 
   async postRating(sessionId, movieId, rating) {
     const url = `${this._apiBase}/movie/${movieId}/rating?guest_session_id=${sessionId}&api_key=${this._apikey}`
