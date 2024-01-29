@@ -39,7 +39,7 @@ class App extends Component {
 
   componentDidMount() {
     this.createGuest()
-    this.fetchMovies()
+    // this.fetchMovies()
     this.getMovieList('return', 1)
     this.loadGenres()
   }
