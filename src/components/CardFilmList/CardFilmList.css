@@ -4,3 +4,9 @@
     gap: 36px;
     margin-top: 45px;
 }
+
+@media (max-width: 1170px) {
+    .card-list {
+        grid-template-columns: 1fr;
+    }
+}

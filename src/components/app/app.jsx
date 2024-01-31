@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { Component } from 'react'
 import { Offline, Online } from 'react-detect-offline'
 import { Layout, Alert, Space, Tabs } from 'antd'
@@ -16,7 +15,7 @@ class App extends Component {
       movies: [],
       loading: true,
       currentPage: 1,
-      // totalPages: 1,
+      totalPages: 1,
       error: false,
       searchQuery: '',
       totalSearchPages: 1,
@@ -34,13 +33,12 @@ class App extends Component {
     this.loadRatedMovies = this.loadRatedMovies.bind(this)
     this.createGuest = this.createGuest.bind(this)
     this.getMovieList = this.getMovieList.bind(this)
-    this.fetchMovies = this.fetchMovies.bind(this)
+    // this.fetchMovies = this.fetchMovies.bind(this)
   }
 
   componentDidMount() {
     this.createGuest()
-    // this.fetchMovies()
-    this.getMovieList('return', 1)
+    this.getMovieList('return')
     this.loadGenres()
   }
 
@@ -70,7 +68,7 @@ class App extends Component {
         })),
       ]
 
-      const ratedTotalPages = ratedMoviesResponse.total_results
+      const ratedTotalPages = ratedMoviesResponse.total_pages
       this.setState({
         ratedMovies: updatedMovies,
         ratedTotalPages,
@@ -119,20 +117,22 @@ class App extends Component {
           movies: result,
           loading: false,
           errorSearch: false,
-          totalPages: result.total_pages,
           currentPage: page,
+          totalSearchPages: result.total_pages,
         })
       })
+
       .catch(this.onError)
   }
-  fetchMovies = (page) => {
-    this.moviesApi
-      .getMovies(page)
-      .then((moviesData) => {
-        this.onMovieLoaded(moviesData.results, moviesData.total_pages)
-      })
-      .catch(this.onError)
-  }
+
+  // fetchMovies = (page) => {
+  //   this.moviesApi
+  //     .getMovies(page)
+  //     .then((moviesData) => {
+  //       this.onMovieLoaded(moviesData.results, moviesData.total_pages)
+  //     })
+  //     .catch(this.onError)
+  // }
 
   handleSearch = (query) => {
     if (query.trim() === '') {
@@ -168,10 +168,9 @@ class App extends Component {
     this.setState({
       currentPage: page,
       loading: true,
-      totalPages: this.state.totalSearchPages,
     })
 
-    this.fetchMovies(page)
+    this.getMovieList(this.state.currentSearchInput, page)
   }
 
   onError = () => {
@@ -182,10 +181,11 @@ class App extends Component {
   }
 
   onMovieLoaded = (movies, total_pages) => {
+    const totalPages = Number(total_pages) || 1
     this.setState({
       movies,
       loading: false,
-      totalPages: total_pages,
+      totalPages,
     })
   }
 
@@ -268,8 +268,6 @@ class App extends Component {
                   movies={movies}
                   loading={loading}
                   error={error}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
                   noResults={noResults}
                   onSearch={this.handleSearch}
                   onChange={this.handlePageChange}
@@ -282,7 +280,7 @@ class App extends Component {
               <Tabs.TabPane
                 tab="Rated"
                 key="2"
-                onTabClick={() => this.loadRatedMovies(guestSessionId, currentPageRated)}
+                onTabClick={() => this.loadRatedMovies(guestSessionId, this.props.currentPageRated)}
               >
                 <RatedTab
                   guestSessionId={guestSessionId}

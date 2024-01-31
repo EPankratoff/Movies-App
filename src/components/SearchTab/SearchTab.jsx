@@ -21,6 +21,8 @@ const SearchTab = (props) => {
     onPostRating,
     onDeleteRating,
   } = props
+  console.log('total:', total)
+
   const hasData = !(loading || error)
   const errorMessage = error ? <ErrorMovies /> : null
   const spinner = loading ? <Spinner className="spinner" /> : null
@@ -36,6 +38,11 @@ const SearchTab = (props) => {
   const noResultsMessage = noResults ? (
     <Alert message="Нет результатов." description="Поробуйте изменить свой запрос по поиску фильмов" type="info" />
   ) : null
+
+  const pagination =
+    total !== undefined ? (
+      <Pagination onChange={onChange} current={current} total={total} showSizeChanger={false} />
+    ) : null
   return (
     <>
       <Content className="content center">
@@ -45,7 +52,7 @@ const SearchTab = (props) => {
       </Content>
       {noResultsMessage}
       {spinner}
-      <Pagination onChange={onChange} current={current} total={total} showSizeChanger={false} />
+      {pagination}
     </>
   )
 }

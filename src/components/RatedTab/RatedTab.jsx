@@ -16,26 +16,10 @@ class RatedTab extends Component {
   async componentDidUpdate(prevProps) {
     const { loadRatedMovies, guestSessionId, currentPageRated } = this.props
 
-    if (loadRatedMovies !== prevProps.loadRatedMovies) {
+    if (currentPageRated !== prevProps.currentPageRated) {
       loadRatedMovies(guestSessionId, currentPageRated)
     }
   }
-
-  // updateRatedMovie = (movieId, value) => {
-  //   // Обновление рейтинга фильма в состоянии RatedTab
-  //   this.setState(({ ratedMovies }) => {
-  //     const updatedMovies = [...ratedMovies]
-  //     const movieIndex = updatedMovies.findIndex((movie) => movie.id === movieId)
-
-  //     if (movieIndex !== -1) {
-  //       updatedMovies[movieIndex].value = value
-  //     }
-
-  //     return {
-  //       ratedMovies: updatedMovies,
-  //     }
-  //   })
-  // }
 
   render() {
     const {

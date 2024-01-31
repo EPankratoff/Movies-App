@@ -34,7 +34,7 @@ class CardFilm extends Component {
 
   render() {
     const { movie } = this.props
-    const { title, overview, poster_path, genre_ids, vote_average, release_date, userRating } = movie
+    const { title, overview, poster_path, genre_ids, vote_average, release_date, rating } = movie
     const newOwerview = this.trimmedText(overview, 45)
 
     const formateDate = release_date
@@ -59,7 +59,15 @@ class CardFilm extends Component {
       <MoviesConsumer>
         {({ genres }) => (
           <Card hoverable className="card" size="default">
-            <Row style={{ height: '100%' }} gutter={20}>
+            <Row
+              style={{ height: '100%' }}
+              gutter={{
+                xs: 8,
+                sm: 16,
+                md: 20,
+                lg: 20,
+              }}
+            >
               <Col span={11}>
                 <img
                   src={poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : assets.zaglushka}
@@ -77,7 +85,7 @@ class CardFilm extends Component {
                   <Col className="vote" style={{ borderColor: movieColor }}>
                     <span className="vote_average">{movieRate}</span>
                   </Col>
-                  <Col>
+                  <Col span={24}>
                     <Text style={{ color: '#827E7E', size: '12px' }}>{formateDate} </Text>
                   </Col>
                   <Col span={22} className="genres">
@@ -100,7 +108,7 @@ class CardFilm extends Component {
                     <Rate
                       className="rate"
                       count={10}
-                      value={userRating}
+                      value={rating}
                       onChange={(value) => this.handleRatingChange(value)}
                     />
                   </Col>
