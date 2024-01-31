@@ -1,11 +1,9 @@
 .content {
-    padding: 50px;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
-
-
+  padding: 50px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
 
 .spinner {
-    margin-top: 45px;
+  margin-top: 45px;
 }
