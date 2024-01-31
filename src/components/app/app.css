@@ -117,3 +117,9 @@ h5 {
     justify-content: center;
     margin: 14px auto;
 }
+
+:where(.css-dkbvqv).ant-pagination {
+    display: flex;
+    justify-content: center;
+    margin: 14px auto;
+}

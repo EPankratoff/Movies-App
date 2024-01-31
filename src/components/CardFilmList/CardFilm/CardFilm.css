@@ -23,6 +23,12 @@
         max-width: 31.833333%;
     }
 
+    :where(.css-dkbvqv).ant-col-11 {
+        height: 100%;
+        flex: 0 0 45.83333333333333%;
+        max-width: 31.833333%;
+    }
+
     .card .ant-card-body {
         padding: 0;
         width: auto;
@@ -31,6 +37,12 @@
     }
 
     :where(.css-dev-only-do-not-override-dkbvqv).ant-col-13 {
+        max-width: 100%;
+        flex: 0 0 67.166667%;
+    }
+
+    :where(.css-dkbvqv).ant-col-13 {
+        display: flex;
         max-width: 100%;
         flex: 0 0 67.166667%;
     }
