@@ -10,6 +10,10 @@
     display: flex;
 }
 
+:where(.css-dkbvqv).ant-col-13 {
+    display: flex;
+}
+
 @media (max-width: 1170px) {
     .image {
         object-fit: inherit;
