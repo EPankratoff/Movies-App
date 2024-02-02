@@ -89,7 +89,7 @@ class CardFilm extends Component {
                     <Text style={{ color: '#827E7E', size: '12px' }}>{formateDate} </Text>
                   </Col>
                   <Col span={22} className="genres">
-                    {genres && genre_ids.length > 0 ? (
+                    {genres && genres.length > 0 && genre_ids && genre_ids.length > 0 ? (
                       genres
                         .filter((genre) => genre_ids && genre_ids.includes(genre.id))
                         .map((genre) => (

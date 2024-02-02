@@ -20,8 +20,9 @@ const SearchTab = (props) => {
     guestSessionId,
     onPostRating,
     onDeleteRating,
+    searchQuery,
   } = props
-  console.log('total:', total)
+  // console.log('total:', total)
 
   const hasData = !(loading || error)
   const errorMessage = error ? <ErrorMovies /> : null
@@ -41,12 +42,12 @@ const SearchTab = (props) => {
 
   const pagination =
     total !== undefined ? (
-      <Pagination onChange={onChange} current={current} total={total} showSizeChanger={false} />
+      <Pagination pageSize={1} onChange={onChange} current={current} total={total} showSizeChanger={false} />
     ) : null
   return (
     <>
       <Content className="content center">
-        <SearchFilm onSearch={onSearch} />
+        <SearchFilm onSearch={onSearch} searchQuery={searchQuery} />
         {errorMessage}
         {content}
       </Content>

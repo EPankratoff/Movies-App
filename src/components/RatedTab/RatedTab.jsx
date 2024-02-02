@@ -69,7 +69,7 @@ class RatedTab extends Component {
             {spinner}
 
             <Pagination
-              pageSize={20}
+              pageSize={1}
               current={currentPageRated}
               total={ratedTotalPages}
               onChange={onChange}

@@ -6,7 +6,7 @@ export default class SearchFilm extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      searchInput: '',
+      searchInput: this.props.searchQuery,
     }
     this.debounceFunction = debounce(this.handleSearch, 500).bind(this)
   }
