@@ -253,7 +253,7 @@ class App extends Component {
       loading,
       error,
       currentPage,
-      // totalPages,
+      totalPages,
       noResults,
       ratedMovies,
       ratedTotalPages,
@@ -264,7 +264,6 @@ class App extends Component {
       currentPageRated,
       activeTab,
       searchQuery,
-      totalSearchPages,
     } = this.state
 
     let contentComponent
@@ -281,7 +280,7 @@ class App extends Component {
           onSearch={this.handleSearch}
           onChange={this.handlePageChange}
           current={currentPage}
-          total={totalSearchPages}
+          total={totalPages}
           onPostRating={this.postRating}
           onDeleteRating={this.deleteRating}
           searchQuery={searchQuery}
