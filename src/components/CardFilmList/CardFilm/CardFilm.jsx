@@ -33,10 +33,12 @@ class CardFilm extends Component {
   }
 
   render() {
-    const { movie } = this.props
-    const { title, overview, poster_path, genre_ids, vote_average, release_date, rating } = movie
+    const { movie, ratedMovies } = this.props
+    const { id, title, overview, poster_path, genre_ids, vote_average, release_date, rating } = movie
     const newOwerview = this.trimmedText(overview, 45)
 
+    const ratedFilm = ratedMovies && ratedMovies.find((obj) => obj.id === id)
+    const ratingInSearch = ratedFilm ? ratedFilm.rating : 0
     const formateDate = release_date
       ? format(parseISO(release_date), 'MMMM dd, yyyy', { local: enGB })
       : 'Время не указано'
@@ -106,6 +108,7 @@ class CardFilm extends Component {
                   </Col>
                   <Col>
                     <Rate
+                      defaultValue={ratingInSearch}
                       className="rate"
                       count={10}
                       value={rating}

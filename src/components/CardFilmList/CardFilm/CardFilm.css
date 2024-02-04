@@ -17,7 +17,6 @@
 @media (max-width: 1170px) {
   .image {
     object-fit: inherit;
-
     border-radius: 6px 0px 0px 6px;
   }
 
@@ -49,5 +48,29 @@
     display: flex;
     max-width: 100%;
     flex: 0 0 67.166667%;
+  }
+}
+
+@media (max-width: 859px) {
+
+
+  :where(.css-dev-only-do-not-override-dkbvqv).ant-col-11 {
+    height: auto;
+    flex: 0 0 45.83333333333333%;
+    max-width: 31.833333%;
+  }
+
+  :where(.css-dkbvqv).ant-col-11 {
+    height: auto;
+    flex: 0 0 45.83333333333333%;
+    max-width: 31.833333%;
+  }
+
+  /* .image {
+    height: auto;
+  } */
+
+  .card .ant-card-body {
+    height: auto;
   }
 }

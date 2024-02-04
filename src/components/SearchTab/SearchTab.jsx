@@ -20,9 +20,9 @@ const SearchTab = (props) => {
     guestSessionId,
     onPostRating,
     onDeleteRating,
+    ratedMovies,
     searchQuery,
   } = props
-  // console.log('total:', total)
 
   const hasData = !(loading || error)
   const errorMessage = error ? <ErrorMovies /> : null
@@ -31,6 +31,7 @@ const SearchTab = (props) => {
     <CardFilmList
       movies={movies}
       loading={loading}
+      ratedMovies={ratedMovies}
       guestSessionId={guestSessionId}
       onPostRating={onPostRating}
       onDeleteRating={onDeleteRating}
@@ -40,10 +41,6 @@ const SearchTab = (props) => {
     <Alert message="Нет результатов." description="Поробуйте изменить свой запрос по поиску фильмов" type="info" />
   ) : null
 
-  const pagination =
-    total !== undefined ? (
-      <Pagination pageSize={1} onChange={onChange} current={current} total={total} showSizeChanger={false} />
-    ) : null
   return (
     <>
       <Content className="content center">
@@ -53,7 +50,7 @@ const SearchTab = (props) => {
       </Content>
       {noResultsMessage}
       {spinner}
-      {pagination}
+      <Pagination pageSize={1} onChange={onChange} current={current} total={total} showSizeChanger={false} />
     </>
   )
 }
